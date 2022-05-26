@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         uiSettings.setLocationButtonEnabled(true);
 
-        // 지도 유형 위성사진으로 설정
+        // 지도 유형 위성사진으로 설정 -> 잘 안나옴
         naverMap.setMapType(NaverMap.MapType.Satellite);
 
     }

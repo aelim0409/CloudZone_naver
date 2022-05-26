@@ -12,12 +12,13 @@ import com.naver.maps.map.UiSettings;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     private MapView mapView;
+    private static NaverMap naverMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-        mapView = findViewById(R.id.map_view);
+
+        mapView = (MapView)findViewById(R.id.map_view);
         mapView.onCreate(savedInstanceState);
         naverMapBasicSettings();
 
@@ -29,13 +30,63 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(@NonNull final NaverMap naverMap) {
 
-// 현재 위치 버튼 안보이게 설정
+        this.naverMap = naverMap;
+
+        // 현재 위치 버튼 보이게 설정
         UiSettings uiSettings = naverMap.getUiSettings();
 
         uiSettings.setLocationButtonEnabled(true);
 
         // 지도 유형 위성사진으로 설정 -> 잘 안나옴
-        naverMap.setMapType(NaverMap.MapType.Satellite);
+        //naverMap.setMapType(NaverMap.MapType.Satellite);
 
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        mapView.onStart();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        mapView.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onLowMemory()
+    {
+        super.onLowMemory();
+        mapView.onLowMemory();
     }
 }

@@ -26,7 +26,7 @@
             android:translationY="550dp">
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/btn_smoke"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -38,7 +38,7 @@
                />
 
             <Button
-                android:id="@+id/button4"
+                android:id="@+id/btn_cloud"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -50,7 +50,7 @@
             />
 
             <Button
-                android:id="@+id/button5"
+                android:id="@+id/btn_non_smoke"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

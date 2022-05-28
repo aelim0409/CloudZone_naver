@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="bottom"
     tools:context=".MainActivity">
 
     <com.naver.maps.map.MapView
@@ -14,8 +15,54 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-    </com.naver.maps.map.MapView>
 
+        <LinearLayout
+            android:id="@+id/btm_layout"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:foregroundGravity="bottom"
+            android:gravity="bottom"
+            android:orientation="horizontal"
+            android:translationY="550dp">
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="#00ff0000"
+                android:drawableLeft="@drawable/img_smoke"
+                android:text="흡연구역"
+                android:textColor="@color/black"
+               />
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#00ff0000"
+                android:drawableLeft="@drawable/img_cloud"
+                android:text="구름존"
+                android:textColor="@color/black"
+
+            />
+
+            <Button
+                android:id="@+id/button5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#00ff0000"
+                android:drawableLeft="@drawable/img_nonsmoke"
+                android:text="금연구역"
+                android:textColor="@color/black"
+
+
+                />
+        </LinearLayout>
+    </com.naver.maps.map.MapView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,6 +16,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"/>
         <LinearLayout
             android:id="@+id/btm_layout"
             android:layout_width="match_parent"
@@ -24,6 +28,8 @@
             android:gravity="bottom"
             android:orientation="horizontal"
             android:translationY="550dp">
+
+
 
             <Button
                 android:id="@+id/btn_smoke"

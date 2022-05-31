@@ -3,13 +3,10 @@ package com.example.cloudzone_naver;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.ContentValues;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapView;
@@ -18,41 +15,77 @@ import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.util.FusedLocationSource;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback{
+
+    private final  String TAG = getClass().getSimpleName();
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private MapView mapView;
     private FusedLocationSource locationSource;
     private NaverMap naverMap;
-    private TextView tv_outPut;
+
+    private final String BASE_URL = "http://13.125.51.242:8000";
+    private MyApi mMyAPI;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-        mapView = findViewById(R.id.map_view);
+
         Button btn_non_smoke = findViewById(R.id.btn_non_smoke);
         Button btn_smoke = findViewById(R.id.btn_smoke);
         Button btn_cloud = findViewById(R.id.btn_cloud);
-        tv_outPut= findViewById(R.id.textView);
+        mapView = findViewById(R.id.map_view);
         mapView.onCreate(savedInstanceState);
         naverMapBasicSettings();
-        locationSource =
-                new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
-        String url = "http://13.125.51.242:8000/nonsmokings/";
-        NetworkTask networkTask = new NetworkTask(url, null);
-        networkTask.execute();
+        locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
-    btn_non_smoke.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
+        initMyAPI(BASE_URL);
 
-            System.out.println("bbbbbbbbb");
+        btn_non_smoke.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        }
+                Log.d(TAG,"GET");
+                Call<List<PostItem>> getCall = mMyAPI.get_posts();
+                getCall.enqueue(new Callback<List<PostItem>>() {
+                    @Override
+                    public void onResponse(Call<List<PostItem>> call, Response<List<PostItem>> response) {
+
+                        Log.d(TAG,""+ call);
+                        Log.d(TAG,""+ response.body());
+                        Log.d(TAG, ""+response);
+                        if( response.isSuccessful()){
+                            List<PostItem> mList = response.body();
+                            String result ="";
+                            for( PostItem item : mList){
+                                /*if(item.equals("latitude: ")){
+                                    result += item.getLatitude();
+                                }*/
+                            }
+                            Log.d(TAG, " "+result);
+                            Log.d(TAG,"success");
+                        }else {
+                            Log.d(TAG,"Status Code : " + response.code());
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<List<PostItem>> call, Throwable t) {
+                        Log.d(TAG,"Fail msg : " + t.getMessage());
+                    }
+                });
+            }
 
 
-    });
-
+        });
         btn_smoke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         });
-
         btn_cloud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,6 +104,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
 
     }
+
+    private void initMyAPI(String baseUrl){
+
+        Log.d(TAG,"initMyAPI : " + baseUrl);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        mMyAPI = retrofit.create(MyApi.class);
+    }
+
     public void naverMapBasicSettings() {
         mapView.getMapAsync(this);
     }
@@ -100,42 +144,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         uiSettings.setLocationButtonEnabled(true);
 
         // 지도 유형 위성사진으로 설정 ->
-      //  naverMap.setMapType(NaverMap.MapType.Satellite);
+        //  naverMap.setMapType(NaverMap.MapType.Satellite);
         // 위치 setlocation
         naverMap.setLocationSource(locationSource);
         //트래킹 모두 카메라가 따라감
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
     }
 
-    // 연동코드
-    public class NetworkTask extends AsyncTask<String, Void, String> {
-
-        private String url;
-        private ContentValues values;
-
-        public NetworkTask(String url, ContentValues values) {
-
-            this.url = url;
-            this.values = values;
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-
-            String result; // 요청 결과를 저장할 변수.
-            RequestHttpURLConnection requestHttpURLConnection = new RequestHttpURLConnection();
-            result = requestHttpURLConnection.request(url, values); // 해당 URL로 부터 결과물을 얻어온다.
-
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-
-            //doInBackground()로 부터 리턴된 값이 onPostExecute()의 매개변수로 넘어오므로 s를 출력한다.
-            //Log.w("result: ",s);
-            tv_outPut.setText(s);
-        }
-    }
 }

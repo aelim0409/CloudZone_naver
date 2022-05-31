@@ -38,14 +38,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         naverMapBasicSettings();
         locationSource =
                 new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
+        String url = "http://13.125.51.242:8000/nonsmokings/";
+        NetworkTask networkTask = new NetworkTask(url, null);
+        networkTask.execute();
 
     btn_non_smoke.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
 
-            String url = "http://13.125.51.242:8000/nonsmokings/";
-            NetworkTask networkTask = new NetworkTask(url, null);
-            networkTask.execute();
+            System.out.println("bbbbbbbbb");
+
         }
 
 
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     // 연동코드
-    public class NetworkTask extends AsyncTask<Void, Void, String> {
+    public class NetworkTask extends AsyncTask<String, Void, String> {
 
         private String url;
         private ContentValues values;
@@ -118,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(String... strings) {
 
             String result; // 요청 결과를 저장할 변수.
             RequestHttpURLConnection requestHttpURLConnection = new RequestHttpURLConnection();

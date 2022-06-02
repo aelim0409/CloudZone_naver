@@ -19,9 +19,9 @@ public interface MyApi {
     @DELETE("/posts/{pk}/")
     Call<PostItem> delete_posts(@Path("pk") int pk);
 
-    @GET("/addresses/")
+    @GET("/nonsmokings/")
     Call<List<PostItem>> get_posts();
 
-    @GET("/posts/{pk}/")
+    @GET("/{pk}/")
     Call<PostItem> get_post_pk(@Path("pk") int pk);
 }

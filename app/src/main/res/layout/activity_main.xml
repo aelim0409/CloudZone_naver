@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-
+                android:background="#00ff0000"
                 android:drawableLeft="@drawable/img_smoke"
                 android:text="흡연구역"
                 android:textColor="@color/black"

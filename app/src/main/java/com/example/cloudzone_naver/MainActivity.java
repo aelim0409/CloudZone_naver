@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private MapView mapView;
     private FusedLocationSource locationSource;
-    private NaverMap naverMap;
+    private NaverMap NaverMap;
 
     private final String BASE_URL = "http://13.125.51.242:8000/";
     private MyApi mMyAPI;
@@ -44,6 +44,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private MyApi_mannerArea mMyAPI3;
 
     public List<PostItem> nonsmoking = new ArrayList<>();
+
+    public List<PostItem> nonSmoking_list = new ArrayList<>();
+    public List<PostItem> smoking_list = new ArrayList<>();
+
+    public List<CircleOverlay> nonSmokingCircle = new ArrayList<>();
+    public List<CircleOverlay> smokingCircle = new ArrayList<>();
+
+    public List<nonSmoke> nonSmokeAreas = new ArrayList<>();
+    public List<smoke> smokeAreas = new ArrayList<>();
+    public int flag=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,32 +75,65 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         btn_non_smoke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG,"GET");
+                flag=1;
+                Log.d(TAG, "GET");
                 Call<List<PostItem>> getCall = mMyAPI.get_posts();
                 getCall.enqueue(new Callback<List<PostItem>>() {
                     @Override
                     public void onResponse(Call<List<PostItem>> call, Response<List<PostItem>> response) {
-                        if( response.isSuccessful()){
-                            List<PostItem> mList = response.body();
-                            for( PostItem item : mList){
-                                Log.d(TAG, ""+item.getLatitude()+" "+item.getLongitude()+" "+" "+item.getRadius());
-                                nonsmoking.add(new PostItem(item.getLatitude(),item.getLongitude(),item.getRadius()));
+
+                        Log.d(TAG, "" + call);
+                        Log.d(TAG, "" + response.body());
+                        Log.d(TAG, "" + response);
+                        if (response.isSuccessful()) {
+                            nonSmoking_list = response.body();
+                            String result = "";
+                            for (PostItem item : nonSmoking_list) {
+
+                                nonSmokeAreas.add(new nonSmoke(item.getLatitude(),item.getLongitude(),item.getRadius()));
                             }
-                            Log.d(TAG,"non_smoking : success");
-                        }else {
-                            Log.d(TAG,"Status Code : " + response.code());
+
+
+
+                            Log.d(TAG, " " + result);
+                            Log.d(TAG, "success");
+                        } else {
+                            Log.d(TAG, "Status Code : " + response.code());
                         }
                     }
+
                     @Override
                     public void onFailure(Call<List<PostItem>> call, Throwable t) {
-                        Log.d(TAG,"Fail msg : " + t.getMessage());
+                        Log.d(TAG, "Fail msg : " + t.getMessage());
                     }
                 });
+
+                for (nonSmoke i : nonSmokeAreas) {
+                    Double Lat=Double.parseDouble(i.getLat());
+                    Double Lon=Double.parseDouble(i.getLog());
+                    Double r=Double.parseDouble(i.getRadius());
+
+                    CircleOverlay circle= new CircleOverlay();
+                    circle.setCenter(new LatLng(Lat,Lon));
+                    circle.setRadius(r);
+                    circle.setColor(Color.RED);
+                    nonSmokingCircle.add(circle);
+                }
+
+                DrawCircle();
             }
         });
+
+
+
+
+
+
+
         btn_smoke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Log.d(TAG,"GET");
                 Call<List<smokingItem>> getCall = mMyAPI2.get_posts();
                 getCall.enqueue(new Callback<List<smokingItem>>() {
@@ -181,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (locationSource.onRequestPermissionsResult(
                 requestCode, permissions, grantResults)) {
             if (!locationSource.isActivated()) { // 권한 거부됨
-                naverMap.setLocationTrackingMode(LocationTrackingMode.None);
+                NaverMap.setLocationTrackingMode(LocationTrackingMode.None);
             }
             return;
         }
@@ -192,9 +235,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(@NonNull final NaverMap naverMap) {
 
-        naverMap.setLightness(0.3f);
-// 현재 위치 버튼 안보이게 설정
-        UiSettings uiSettings = naverMap.getUiSettings();
+        this.NaverMap=naverMap;
+        NaverMap.setLightness(0.3f);
+// 현재 위치 NaverMap 안보이게 설정
+        UiSettings uiSettings = NaverMap.getUiSettings();
 
         uiSettings.setLocationButtonEnabled(true);
 
@@ -211,4 +255,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         NaverMapOptions options = new NaverMapOptions().camera(cp);
     }
+        public void DrawCircle()
+        {
+            if(flag==1)
+            {
+                for(CircleOverlay c : nonSmokingCircle)
+                {
+                    c.setMap(NaverMap);
+                }
+            }
+            if(flag==2)
+            {
+                for(CircleOverlay c : smokingCircle)
+                {
+                    c.setMap(NaverMap);
+                }
+            }
+        }
 }

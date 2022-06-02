@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final String BASE_URL = "http://13.125.51.242:8000/";
     private MyApi mMyAPI;
     private MyApi_smoking mMyAPI2;
+    private MyApi_mannerArea mMyAPI3;
 
     public List<PostItem> nonsmoking = new ArrayList<>();
 
@@ -59,14 +60,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         initMyAPI(BASE_URL);
         initMyAPI_smoking(BASE_URL);
+        initMyAPI_mannerArea(BASE_URL);
 
         btn_non_smoke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Log.d(TAG,"GET");
                 Call<List<PostItem>> getCall = mMyAPI.get_posts();
-
                 getCall.enqueue(new Callback<List<PostItem>>() {
                     @Override
                     public void onResponse(Call<List<PostItem>> call, Response<List<PostItem>> response) {
@@ -80,63 +80,65 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }else {
                             Log.d(TAG,"Status Code : " + response.code());
                         }
-
                     }
-
-
                     @Override
-
                     public void onFailure(Call<List<PostItem>> call, Throwable t) {
                         Log.d(TAG,"Fail msg : " + t.getMessage());
                     }
                 });
             }
-
-
         });
         btn_smoke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
                 Log.d(TAG,"GET");
-                Call<List<PostItem>> getCall = mMyAPI2.get_posts();
-
-                getCall.enqueue(new Callback<List<PostItem>>() {
+                Call<List<smokingItem>> getCall = mMyAPI2.get_posts();
+                getCall.enqueue(new Callback<List<smokingItem>>() {
                     @Override
-                    public void onResponse(Call<List<PostItem>> call, Response<List<PostItem>> response) {
+                    public void onResponse(Call<List<smokingItem>> call, Response<List<smokingItem>> response) {
                         if( response.isSuccessful()){
-                            List<PostItem> mList = response.body();
-                            for( PostItem item : mList){
+                            List<smokingItem> mList = response.body();
+                            for( smokingItem item : mList){
                                 Log.d(TAG, ""+item.getLatitude()+" "+item.getLongitude()+" "+" "+item.getRadius());
                             }
                             Log.d(TAG,"smoking : success");
                         }else {
                             Log.d(TAG,"Status Code : " + response.code());
                         }
-
                     }
-
-
                     @Override
-
-                    public void onFailure(Call<List<PostItem>> call, Throwable t) {
+                    public void onFailure(Call<List<smokingItem>> call, Throwable t) {
                         Log.d(TAG,"Fail msg : " + t.getMessage());
                     }
                 });
             }
-
-
         });
         btn_cloud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG,"GET");
+                Call<List<mannerAreaItem>> getCall = mMyAPI3.get_posts();
+                getCall.enqueue(new Callback<List<mannerAreaItem>>() {
+                    @Override
+                    public void onResponse(Call<List<mannerAreaItem>> call, Response<List<mannerAreaItem>> response) {
+                        if( response.isSuccessful()){
+                            /*List<mannerAreaItem> mList = response.body();
+                            for( mannerAreaItem item : mList){
 
+                            }*/
+                            Log.d(TAG,"mannerArea : success");
+                        }else {
+                            Log.d(TAG,"Status Code : " + response.code());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<mannerAreaItem>> call, Throwable t) {
+                        Log.d(TAG,"Fail msg : " + t.getMessage());
+                    }
+                });
             }
-
-
         });
-
     }
 
     private void initMyAPI(String baseUrl){
@@ -158,6 +160,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .build();
         mMyAPI2 = retrofit.create(MyApi_smoking.class);
     }
+    private void initMyAPI_mannerArea(String baseUrl){
+        Log.d(TAG,"initMyAPI_smoking : " + baseUrl);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        mMyAPI3 = retrofit.create(MyApi_mannerArea.class);
+    }
+
 
     public void naverMapBasicSettings() {
         mapView.getMapAsync(this);
@@ -199,13 +210,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 16);
 
         NaverMapOptions options = new NaverMapOptions().camera(cp);
-
-        CircleOverlay circle = new CircleOverlay();
-        circle.setCenter(new LatLng(37.5666102, 126.9783881));
-        circle.setRadius(500);
-        circle.setColor(Color.GREEN);
-        circle.setVisible(true);
-        Log.d(TAG,"naverMap : "+naverMap);
-        circle.setMap(naverMap);
     }
 }

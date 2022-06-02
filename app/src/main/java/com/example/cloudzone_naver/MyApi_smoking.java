@@ -12,17 +12,17 @@ import retrofit2.http.Path;
 
 public interface MyApi_smoking{
         @POST("/posts/")
-        Call<PostItem> post_posts(@Body PostItem post);
+        Call<smokingItem> post_posts(@Body smokingItem post);
 
         @PATCH("/posts/{pk}/")
-        Call<PostItem> patch_posts(@Path("pk") int pk, @Body PostItem post);
+        Call<smokingItem> patch_posts(@Path("pk") int pk, @Body smokingItem post);
 
         @DELETE("/posts/{pk}/")
-        Call<PostItem> delete_posts(@Path("pk") int pk);
+        Call<smokingItem> delete_posts(@Path("pk") int pk);
 
         @GET("/smokings/")
-        Call<List<PostItem>> get_posts();
+        Call<List<smokingItem>> get_posts();
 
         @GET("/{pk}/")
-        Call<PostItem> get_post_pk(@Path("pk") int pk);
+        Call<smokingItem> get_post_pk(@Path("pk") int pk);
 }

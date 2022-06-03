@@ -49,13 +49,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public List<PostItem> nonsmoking = new ArrayList<>();
 
     public List<PostItem> nonSmoking_list = new ArrayList<>();
-    public List<PostItem> smoking_list = new ArrayList<>();
+    public List<smokingItem> smoking_list = new ArrayList<>();
 
     public List<CircleOverlay> nonSmokingCircle = new ArrayList<>();
     public List<CircleOverlay> smokingCircle = new ArrayList<>();
 
     public List<Marker> nonSmokingMarkers = new ArrayList<>();
-
+    public List<Marker> smokingMarkers= new ArrayList<>();
     public List<nonSmoke> nonSmokeAreas = new ArrayList<>();
     public List<smoke> smokeAreas = new ArrayList<>();
     public int flag=0;
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     //마커의 투명도
                     m.setAlpha(1.0f);
                     //마커 위치 circle 위에 생겨 좌표 임의 설정 필요
-                    m.setPosition(new LatLng(Lat, Lon));
+                    m.setPosition(new LatLng(Lat-r/700000, Lon));
                     m.setHeight(size);
                     m.setWidth(size);
 
@@ -158,16 +158,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         btn_smoke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                flag=2;
                 Log.d(TAG,"GET");
                 Call<List<smokingItem>> getCall = mMyAPI2.get_posts();
                 getCall.enqueue(new Callback<List<smokingItem>>() {
                     @Override
                     public void onResponse(Call<List<smokingItem>> call, Response<List<smokingItem>> response) {
                         if( response.isSuccessful()){
-                            List<smokingItem> mList = response.body();
-                            for( smokingItem item : mList){
+                            smoking_list = response.body();
+                            for( smokingItem item : smoking_list){
                                 Log.d(TAG, ""+item.getLatitude()+" "+item.getLongitude()+" "+" "+item.getRadius());
+                                smokeAreas.add(new smoke(item.getLatitude(),item.getLongitude(),item.getRadius()));
                             }
                             Log.d(TAG,"smoking : success");
                         }else {
@@ -179,8 +180,46 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         Log.d(TAG,"Fail msg : " + t.getMessage());
                     }
                 });
+
+
+                for (smoke i : smokeAreas) {
+                    Double Lat=Double.parseDouble(i.getLat());
+                    Double Lon=Double.parseDouble(i.getLog());
+                    Double r=Double.parseDouble(i.getRadius());
+
+                    int size = (int) Math.round(r);
+                    Marker m = new Marker();
+                    //원근감 표시
+                    m.setIconPerspectiveEnabled(true);
+                    //아이콘 지정
+                    m.setIcon(OverlayImage.fromResource(R.drawable.ic_greencircle_svg));
+                    //마커의 투명도
+                    m.setAlpha(1.0f);
+                    //마커 위치 circle 위에 생겨 좌표 임의 설정 필요
+                    m.setPosition(new LatLng(Lat, Lon));
+                    m.setHeight(size);
+                    m.setWidth(size);
+                    smokingMarkers.add(m);
+                    //마커 우선순위
+                    // m.setZIndex(zIndex);
+                    //마커 표시
+                    // marker.setMap(naverMap);
+
+
+
+                    CircleOverlay circle= new CircleOverlay();
+                    circle.setCenter(new LatLng(Lat,Lon));
+                    circle.setRadius(1);
+                    circle.setColor(Color.GREEN);
+                    smokingCircle.add(circle);
+                }
+
+                DrawCircle();
+
             }
         });
+
+
         btn_cloud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -228,6 +267,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .build();
         mMyAPI2 = retrofit.create(MyApi_smoking.class);
     }
+
     private void initMyAPI_mannerArea(String baseUrl){
         Log.d(TAG,"initMyAPI_smoking : " + baseUrl);
         Retrofit retrofit = new Retrofit.Builder()
@@ -276,9 +316,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         CameraPosition cp = new CameraPosition(
                 new LatLng(37.4,127.075),
-                16);
+                30);
 
         NaverMapOptions options = new NaverMapOptions().camera(cp);
+
+
     }
 
         public void DrawCircle()
@@ -296,10 +338,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
             if(flag==2)
             {
+
                 for(CircleOverlay c : smokingCircle)
                 {
                     c.setMap(NaverMap);
                 }
+
+
+
+                for(Marker m : smokingMarkers)
+                {
+                    m.setMap(NaverMap);
+                }
+
+
             }
         }
 }

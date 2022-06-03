@@ -18,8 +18,11 @@ import com.naver.maps.map.NaverMapOptions;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.CircleOverlay;
+import com.naver.maps.map.overlay.Marker;
+import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.util.FusedLocationSource;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
@@ -50,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public List<CircleOverlay> nonSmokingCircle = new ArrayList<>();
     public List<CircleOverlay> smokingCircle = new ArrayList<>();
+
+    public List<Marker> nonSmokingMarkers = new ArrayList<>();
 
     public List<nonSmoke> nonSmokeAreas = new ArrayList<>();
     public List<smoke> smokeAreas = new ArrayList<>();
@@ -113,9 +118,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Double Lon=Double.parseDouble(i.getLog());
                     Double r=Double.parseDouble(i.getRadius());
 
+                    int size = (int) Math.round(r);
+                    Marker m = new Marker();
+                    //원근감 표시
+                    m.setIconPerspectiveEnabled(true);
+                    //아이콘 지정
+                    m.setIcon(OverlayImage.fromResource(R.drawable.ic_redcircle_svg));
+                    //마커의 투명도
+                    m.setAlpha(1.0f);
+                    //마커 위치 circle 위에 생겨 좌표 임의 설정 필요
+                    m.setPosition(new LatLng(Lat, Lon));
+                    m.setHeight(size);
+                    m.setWidth(size);
+
+                    //마커 우선순위
+                   // m.setZIndex(zIndex);
+                    //마커 표시
+                    // marker.setMap(naverMap);
+
+
+                    nonSmokingMarkers.add(m);
                     CircleOverlay circle= new CircleOverlay();
                     circle.setCenter(new LatLng(Lat,Lon));
-                    circle.setRadius(r);
+                    circle.setRadius(5);
                     circle.setColor(Color.RED);
                     nonSmokingCircle.add(circle);
                 }
@@ -255,6 +280,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         NaverMapOptions options = new NaverMapOptions().camera(cp);
     }
+
         public void DrawCircle()
         {
             if(flag==1)
@@ -262,6 +288,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 for(CircleOverlay c : nonSmokingCircle)
                 {
                     c.setMap(NaverMap);
+                }
+                for(Marker m : nonSmokingMarkers)
+                {
+                    m.setMap(NaverMap);
                 }
             }
             if(flag==2)

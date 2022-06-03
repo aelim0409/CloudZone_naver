@@ -7,7 +7,7 @@ public class nonSmoke {
     {
         this.lat= a;
         this.log = b;
-        this.r =c;
+       this.r =c;
     }
 
     public String getLat() {

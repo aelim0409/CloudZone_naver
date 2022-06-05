@@ -31,8 +31,7 @@
             android:translationY="550dp">
 
 
-
-            <Button
+            <ToggleButton
                 android:id="@+id/btn_smoke"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -41,30 +40,33 @@
                 android:background="#00ff0000"
 
                 android:drawableLeft="@drawable/img_smoke"
-                android:text="흡연구역"
+                android:textOff="흡연구역"
+                android:textOn="흡연구역"
                 android:textColor="@color/black"
                />
 
-            <Button
+            <ToggleButton
                 android:id="@+id/btn_cloud"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="#00ff0000"
                 android:drawableLeft="@drawable/img_cloud"
-                android:text="구름존"
+                android:textOff="구름존"
+                android:textOn="구름존"
                 android:textColor="@color/black"
 
             />
 
-            <Button
+            <ToggleButton
                 android:id="@+id/btn_non_smoke"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="#00ff0000"
                 android:drawableLeft="@drawable/img_nonsmoke"
-                android:text="금연구역"
+                android:textOff="금연구역"
+                android:textOn="금연구역"
                 android:textColor="@color/black"
                 />
         </LinearLayout>

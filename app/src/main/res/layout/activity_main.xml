@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="bottom"
+
     tools:context=".MainActivity">
 
     <com.naver.maps.map.MapView
@@ -38,6 +39,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:background="#00ff0000"
+
                 android:drawableLeft="@drawable/img_smoke"
                 android:text="흡연구역"
                 android:textColor="@color/black"
@@ -66,20 +68,6 @@
                 android:textColor="@color/black"
                 />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/btn_analysis"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="400dp"
-            android:layout_marginLeft="350dp"
-            android:background="@drawable/shape_for_circle_button"
-            android:drawable="@drawable/img_analysis"
-            android:drawableTint="#00ff0000"
-            android:text="A"
-            android:textSize="32sp"
-
-            />
 
 
     </com.naver.maps.map.MapView>

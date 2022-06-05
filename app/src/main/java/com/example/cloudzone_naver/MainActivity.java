@@ -7,8 +7,10 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.example.cloudzone_naver.Adapder.pointAdapter;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.LocationTrackingMode;
@@ -18,7 +20,10 @@ import com.naver.maps.map.NaverMapOptions;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.CircleOverlay;
+import com.naver.maps.map.overlay.InfoWindow;
+import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.overlay.Marker;
+import com.naver.maps.map.overlay.Overlay;
 import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.util.FusedLocationSource;
 
@@ -56,8 +61,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public List<Marker> nonSmokingMarkers = new ArrayList<>();
     public List<Marker> smokingMarkers= new ArrayList<>();
+
     public List<nonSmoke> nonSmokeAreas = new ArrayList<>();
     public List<smoke> smokeAreas = new ArrayList<>();
+    //public List<InfoWindow> nonSmokeAreaInfos = new ArrayList<>();
+
+
     public int flag=0;
 
     @Override
@@ -95,10 +104,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             String result = "";
                             for (PostItem item : nonSmoking_list) {
 
-                                nonSmokeAreas.add(new nonSmoke(item.getLatitude(),item.getLongitude(),item.getRadius()));
+                                nonSmokeAreas.add(new nonSmoke(item.getLatitude(),item.getLongitude(),item.getRadius(),item.getName(),item.getFine()));
                             }
-
-
 
                             Log.d(TAG, " " + result);
                             Log.d(TAG, "success");
@@ -127,9 +134,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     //마커의 투명도
                     m.setAlpha(1.0f);
                     //마커 위치 circle 위에 생겨 좌표 임의 설정 필요
-                    m.setPosition(new LatLng(Lat-r/700000, Lon));
+                    m.setPosition(new LatLng(Lat-r/170000, Lon)); //170000 zoom 15 - > 300000
                     m.setHeight(size);
                     m.setWidth(size);
+                    m.setMinZoom(10);
+                    m.setOnClickListener(new Overlay.OnClickListener() {
+                        @Override
+                        public boolean onClick(@NonNull Overlay overlay) {
+                            ViewGroup rootView = (ViewGroup)findViewById(R.id.map_view);
+                            System.out.println("name :"+i.getName());
+                            pointAdapter adapter = new pointAdapter(MainActivity.this, rootView,i.getName(),"dddddd",i.getMoney());
+
+                            InfoWindow i = new InfoWindow();
+                            i .setAdapter(adapter);
+
+
+                            //투명도 조정
+                            i .setAlpha(0.9f);
+                            //인포창 표시
+                            i.open(m);
+                            return false;
+                        }
+                    });
+
 
                     //마커 우선순위
                    // m.setZIndex(zIndex);
@@ -142,18 +169,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     circle.setCenter(new LatLng(Lat,Lon));
                     circle.setRadius(5);
                     circle.setColor(Color.RED);
+
+                    //circle.s;
+
                     nonSmokingCircle.add(circle);
+
+
+
                 }
 
                 DrawCircle();
             }
         });
-
-
-
-
-
-
 
         btn_smoke.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,8 +224,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     m.setAlpha(1.0f);
                     //마커 위치 circle 위에 생겨 좌표 임의 설정 필요
                     m.setPosition(new LatLng(Lat, Lon));
-                    m.setHeight(size);
-                    m.setWidth(size);
+                    m.setHeight(size*2);
+                    m.setWidth(size*2);
                     smokingMarkers.add(m);
                     //마커 우선순위
                     // m.setZIndex(zIndex);
@@ -209,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     CircleOverlay circle= new CircleOverlay();
                     circle.setCenter(new LatLng(Lat,Lon));
-                    circle.setRadius(1);
+                    circle.setRadius(r);
                     circle.setColor(Color.GREEN);
                     smokingCircle.add(circle);
                 }
@@ -302,10 +329,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         this.NaverMap=naverMap;
         NaverMap.setLightness(0.3f);
-// 현재 위치 NaverMap 안보이게 설정
+        //  현재 위치 NaverMap 안보이게 설정
         UiSettings uiSettings = NaverMap.getUiSettings();
 
-        uiSettings.setLocationButtonEnabled(true);
+        //uiSettings.setLocationButtonEnabled(true);
 
         // 지도 유형 위성사진으로 설정 ->
         //  naverMap.setMapType(NaverMap.MapType.Satellite);
@@ -315,12 +342,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
 
         CameraPosition cp = new CameraPosition(
-                new LatLng(37.4,127.075),
-                30);
+                new LatLng(37.551359,127.0742579),
+                14);
 
         NaverMapOptions options = new NaverMapOptions().camera(cp);
-
-
+        NaverMap.setCameraPosition(cp);
     }
 
         public void DrawCircle()
@@ -330,11 +356,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 for(CircleOverlay c : nonSmokingCircle)
                 {
                     c.setMap(NaverMap);
+
+
+
                 }
                 for(Marker m : nonSmokingMarkers)
                 {
                     m.setMap(NaverMap);
+                    /*
+                    LocationOverlay l = NaverMap.getLocationOverlay();
+                    l.setVisible(true);
+                    l.setPosition(m.getPosition());
+                    l.setCircleRadius(m.getHeight());
+*/
+
                 }
+
             }
             if(flag==2)
             {
@@ -344,13 +381,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     c.setMap(NaverMap);
                 }
 
-
+/*
 
                 for(Marker m : smokingMarkers)
                 {
                     m.setMap(NaverMap);
                 }
-
+*/
 
             }
         }

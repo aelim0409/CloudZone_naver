@@ -42,6 +42,7 @@ public class pointAdapter extends InfoWindow.DefaultViewAdapter
         TextView window_locationName = (TextView) view.findViewById(R.id.window_locationName);
         TextView window_money = (TextView) view.findViewById(R.id.window_money);
 
+
         System.out.println("A location : "+location);
         window_location.setText("어린이 대공원");
       //  window_location_image.setImageResource(R.drawable.image_point);

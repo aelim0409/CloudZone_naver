@@ -9,9 +9,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ToggleButton;
 
+import com.example.cloudzone_naver.Adapder.pointAdapter;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.LocationTrackingMode;
@@ -106,6 +108,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     circle.setRadius(Double.parseDouble(item.getRadius()));
                                     circle.setColor(Color.argb(0.3f,0.9f,0.0f,0.0f));
                                     circle.setMap(NaverMap);
+
+                                    //정보창 띄우기
+                                    circle.setOnClickListener(new Overlay.OnClickListener() {
+                                        @Override
+                                        public boolean onClick(@NonNull Overlay overlay) {
+                                            ViewGroup rootView = (ViewGroup)findViewById(R.id.map_view);
+                                            System.out.println("name :"+item.getName());
+                                            pointAdapter adapter = new pointAdapter(MainActivity.this, rootView,item.getName(),"dddddd",item.getFine());
+
+                                            InfoWindow i = new InfoWindow();
+                                            i.setAdapter(adapter);
+                                            i.setPosition(new LatLng(Double.parseDouble(item.getLatitude()),Double.parseDouble(item.getLongitude())));
+
+                                            //투명도 조정
+                                            i .setAlpha(0.9f);
+                                            //인포창 표시
+                                            i.open(NaverMap);
+                                            return false;
+                                        }
+                                    });
                                     nonSmokingCircle.add(circle);
                                 }
                                 Log.d(TAG, "success");

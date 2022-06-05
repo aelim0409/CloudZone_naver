@@ -20,11 +20,6 @@ public class PostItem {
     private String image;
     private String radius;
 
-    PostItem(String la, String lo, String r){
-        latitude = la;
-        longitude=lo;
-        radius=r;
-    }
     public String getId() {
         return id;
     }

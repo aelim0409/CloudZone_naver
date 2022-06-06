@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.cloudzone_naver.Adapder.pointAdapter;
@@ -46,6 +47,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     private final  String TAG = getClass().getSimpleName();
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private MapView mapView;
     private FusedLocationSource locationSource;
@@ -71,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public List<nonSmoke> nonSmokeAreas = new ArrayList<>();
     public List<smoke> smokeAreas = new ArrayList<>();
-
     //public List<InfoWindow> nonSmokeAreaInfos = new ArrayList<>();
 
     public List<PolygonOverlay> mannerArea = new ArrayList<>();
@@ -112,38 +113,45 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     circle.setRadius(Double.parseDouble(item.getRadius()));
                                     circle.setColor(Color.argb(0.3f,0.9f,0.0f,0.0f));
                                     circle.setMap(NaverMap);
-                                    InfoWindow i = new InfoWindow();
+
                                     //정보창 띄우기
                                     circle.setOnClickListener(new Overlay.OnClickListener() {
                                         @Override
                                         public boolean onClick(@NonNull Overlay overlay) {
-
                                             ViewGroup rootView = (ViewGroup)findViewById(R.id.map_view);
                                             System.out.println("name :"+item.getName());
-                                            pointAdapter adapter = new pointAdapter(MainActivity.this, rootView,item.getName(),"dddddd",item.getFine());
 
-                                            if(i.isAdded()==true){
+                                            pointAdapter adapter = new pointAdapter(MainActivity.this, rootView,item.getName(),item.getAddress_doromyung(),"벌금 "+item.getFine(),item.getImage());
 
-                                                Log.d(TAG, ""+"flag=1");
-                                                i.setMap(null);
+                                            InfoWindow i = new InfoWindow();
+                                            i.setAdapter(adapter);
+
+                                            i.setPosition(new LatLng(Double.parseDouble(item.getLatitude()),Double.parseDouble(item.getLongitude())));
+                                           // TextView location = findViewById(R.id.window_location);
+                                            //location.setText("어린이대공원");
+                                            //투명도 조정
+                                            i .setAlpha(0.9f);
+                                            //인포창 표시
+                                          //  i.open(NaverMap);
+                                            i.setMap(NaverMap);
+                                            i.setOnClickListener(new Overlay.OnClickListener() {
+                                                @Override
+                                                public boolean onClick(@NonNull Overlay overlay) {
+                                                    i.setMap(null);
+                                                    return false;
+                                                }
+                                            });
+                                            /*
+                                            NaverMap.setOnMapClickListener((coord, point) -> {
                                                 i.close();
-                                                //flag=0;
-                                                //인포창 표시
-                                            }
-                                            else{
-                                                i.setAdapter(adapter);
-                                                i.setPosition(new LatLng(Double.parseDouble(item.getLatitude())+0.0008, Double.parseDouble(item.getLongitude())));
-                                                //투명도 조정
-                                                i .setAlpha(0.9f);
-                                                i.open(NaverMap);
-                                                flag=1;
-                                                Log.d(TAG, ""+"flag=0");
-                                            }
-                                            return false;
+                                                Log.d(TAG, ""+"맵 누르기");
+                                            });
 
+                                             */
+
+                                            return false;
                                         }
                                     });
-
                                     nonSmokingCircle.add(circle);
                                 }
                                 Log.d(TAG, "success");
@@ -166,6 +174,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+
+
+
+
+
+
         btn_smoke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -183,6 +197,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     circle.setRadius(Double.parseDouble(item.getRadius()));
                                     circle.setColor(Color.argb(0.3f,0.0f,1.0f,0.0f));
                                     circle.setMap(NaverMap);
+                                    circle.setOnClickListener(new Overlay.OnClickListener() {
+                                        @Override
+                                        public boolean onClick(@NonNull Overlay overlay) {
+                                            ViewGroup rootView = (ViewGroup)findViewById(R.id.map_view);
+                                            System.out.println("name :"+item.getName());
+
+                                            pointAdapter adapter = new pointAdapter(MainActivity.this, rootView,item.getName(),item.getAddress_doromyung(),"법정지정흡연구역",item.getImage());
+
+                                            InfoWindow i = new InfoWindow();
+                                            i.setAdapter(adapter);
+
+                                            i.setPosition(new LatLng(Double.parseDouble(item.getLatitude()),Double.parseDouble(item.getLongitude())));
+                                            // TextView location = findViewById(R.id.window_location);
+                                            //location.setText("어린이대공원");
+                                            //투명도 조정
+                                            i .setAlpha(0.9f);
+                                            //인포창 표시
+                                            i.setMap(NaverMap);
+                                            i.setOnClickListener(new Overlay.OnClickListener() {
+                                                @Override
+                                                public boolean onClick(@NonNull Overlay overlay) {
+                                                    i.setMap(null);
+                                                    return false;
+                                                }
+                                            });
+                                            return false;
+                                        }
+                                    });
                                     smokingCircle.add(circle);
                                 }
                                 Log.d(TAG, "success");
@@ -204,10 +246,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         });
-
         btn_cloud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG,"GET");
                 Call<List<mannerAreaItem>> getCall = mMyAPI3.get_posts();
                 getCall.enqueue(new Callback<List<mannerAreaItem>>() {
                     @Override
@@ -250,6 +292,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             Log.d(TAG,"Status Code : " + response.code());
                         }
                     }
+
                     @Override
                     public void onFailure(Call<List<mannerAreaItem>> call, Throwable t) {
                         Log.d(TAG,"Fail msg : " + t.getMessage());
@@ -260,13 +303,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void initMyAPI(String baseUrl){
+
+        Log.d(TAG,"initMyAPI : " + baseUrl);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+
         mMyAPI = retrofit.create(MyApi.class);
+
     }
     private void initMyAPI_smoking(String baseUrl){
+        Log.d(TAG,"initMyAPI_smoking : " + baseUrl);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -274,18 +322,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMyAPI2 = retrofit.create(MyApi_smoking.class);
     }
     private void initMyAPI_mannerArea(String baseUrl){
+        Log.d(TAG,"initMyAPI_smoking : " + baseUrl);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         mMyAPI3 = retrofit.create(MyApi_mannerArea.class);
     }
+
+
     public void naverMapBasicSettings() {
         mapView.getMapAsync(this);
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,  @NonNull int[] grantResults) {
+
         if (locationSource.onRequestPermissionsResult(
                 requestCode, permissions, grantResults)) {
             if (!locationSource.isActivated()) { // 권한 거부됨

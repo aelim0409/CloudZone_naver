@@ -1,5 +1,6 @@
 package com.example.cloudzone_naver.Adapder;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,25 +31,39 @@ public class pointAdapter extends InfoWindow.DefaultViewAdapter
         this.money= Money;
     }
 
+
     @NonNull
     @Override
     protected View getContentView(@NonNull InfoWindow infoWindow)
     {
 
-        View view = (View) LayoutInflater.from(mContext).inflate(R.layout.info_window, mParent, false);
-
-        TextView window_location = (TextView) view.findViewById(R.id.window_location);
-       // ImageView window_location_image = (ImageView) view.findViewById(R.id.window_location_image);
-        TextView window_locationName = (TextView) view.findViewById(R.id.window_locationName);
-        TextView window_money = (TextView) view.findViewById(R.id.window_money);
+/*
+        LayoutInflater layoutInFlater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = layoutInFlater.inflate(R.layout.info_window, null);
 
 
-        System.out.println("A location : "+location);
-        window_location.setText("어린이 대공원");
-      //  window_location_image.setImageResource(R.drawable.image_point);
-        window_locationName.setText(locationName);
-        window_money.setText(money);
+ */
 
+        View view =  LayoutInflater.from(mContext).inflate(R.layout.info_window, mParent, false);
+
+        TextView window_location = view.findViewById(R.id.window_location);
+       // ImageView window_location_image =  view.findViewById(R.id.window_location_image);
+        TextView window_locationName =  view.findViewById(R.id.window_locationName);
+
+        TextView window_money =  view.findViewById(R.id.window_money);
+
+        System.out.println("A location : "+window_location.getText());
+        System.out.println("A locationName: "+window_locationName.getText());
+        System.out.println("A money : "+window_money.getText());
+        window_location.setText(locationName);
+     // window_location_image.setImageResource(R.);
+        window_locationName.setText(location);
+        window_money.setText("벌금" + money);
+
+        System.out.println("A location2 : "+window_location.getText());
+        System.out.println("A locationName2: "+window_locationName.getText());
+        System.out.println("A money2 : "+window_money.getText());
+       // System.out.println("A money : "+money);
         return view;
     }
 }

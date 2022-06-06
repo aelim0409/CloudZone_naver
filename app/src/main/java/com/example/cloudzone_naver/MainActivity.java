@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.cloudzone_naver.Adapder.pointAdapter;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public List<nonSmoke> nonSmokeAreas = new ArrayList<>();
     public List<smoke> smokeAreas = new ArrayList<>();
+
     //public List<InfoWindow> nonSmokeAreaInfos = new ArrayList<>();
 
 
@@ -115,12 +117,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                         public boolean onClick(@NonNull Overlay overlay) {
                                             ViewGroup rootView = (ViewGroup)findViewById(R.id.map_view);
                                             System.out.println("name :"+item.getName());
-                                            pointAdapter adapter = new pointAdapter(MainActivity.this, rootView,item.getName(),"dddddd",item.getFine());
+
+                                            pointAdapter adapter = new pointAdapter(MainActivity.this, rootView,item.getName(),item.getAddress_doromyung(),item.getFine());
 
                                             InfoWindow i = new InfoWindow();
                                             i.setAdapter(adapter);
-                                            i.setPosition(new LatLng(Double.parseDouble(item.getLatitude()),Double.parseDouble(item.getLongitude())));
 
+                                            i.setPosition(new LatLng(Double.parseDouble(item.getLatitude()),Double.parseDouble(item.getLongitude())));
+                                           // TextView location = findViewById(R.id.window_location);
+                                            //location.setText("어린이대공원");
                                             //투명도 조정
                                             i .setAlpha(0.9f);
                                             //인포창 표시

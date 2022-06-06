@@ -34,14 +34,12 @@ public class pointAdapter extends InfoWindow.DefaultViewAdapter
     @Override
     protected View getContentView(@NonNull InfoWindow infoWindow)
     {
-
         View view = (View) LayoutInflater.from(mContext).inflate(R.layout.info_window, mParent, false);
 
         TextView window_location = (TextView) view.findViewById(R.id.window_location);
        // ImageView window_location_image = (ImageView) view.findViewById(R.id.window_location_image);
         TextView window_locationName = (TextView) view.findViewById(R.id.window_locationName);
         TextView window_money = (TextView) view.findViewById(R.id.window_money);
-
 
         System.out.println("A location : "+location);
         window_location.setText("어린이 대공원");

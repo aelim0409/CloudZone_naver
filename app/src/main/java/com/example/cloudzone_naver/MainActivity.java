@@ -28,10 +28,13 @@ import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.Overlay;
 import com.naver.maps.map.overlay.OverlayImage;
+import com.naver.maps.map.overlay.PolygonOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,7 +46,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     private final  String TAG = getClass().getSimpleName();
-
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private MapView mapView;
     private FusedLocationSource locationSource;
@@ -69,8 +71,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public List<nonSmoke> nonSmokeAreas = new ArrayList<>();
     public List<smoke> smokeAreas = new ArrayList<>();
+
     //public List<InfoWindow> nonSmokeAreaInfos = new ArrayList<>();
 
+    public List<PolygonOverlay> mannerArea = new ArrayList<>();
 
     public int flag=0;
 
@@ -108,26 +112,38 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     circle.setRadius(Double.parseDouble(item.getRadius()));
                                     circle.setColor(Color.argb(0.3f,0.9f,0.0f,0.0f));
                                     circle.setMap(NaverMap);
-
+                                    InfoWindow i = new InfoWindow();
                                     //정보창 띄우기
                                     circle.setOnClickListener(new Overlay.OnClickListener() {
                                         @Override
                                         public boolean onClick(@NonNull Overlay overlay) {
+
                                             ViewGroup rootView = (ViewGroup)findViewById(R.id.map_view);
                                             System.out.println("name :"+item.getName());
                                             pointAdapter adapter = new pointAdapter(MainActivity.this, rootView,item.getName(),"dddddd",item.getFine());
 
-                                            InfoWindow i = new InfoWindow();
-                                            i.setAdapter(adapter);
-                                            i.setPosition(new LatLng(Double.parseDouble(item.getLatitude()),Double.parseDouble(item.getLongitude())));
+                                            if(i.isAdded()==true){
 
-                                            //투명도 조정
-                                            i .setAlpha(0.9f);
-                                            //인포창 표시
-                                            i.open(NaverMap);
+                                                Log.d(TAG, ""+"flag=1");
+                                                i.setMap(null);
+                                                i.close();
+                                                //flag=0;
+                                                //인포창 표시
+                                            }
+                                            else{
+                                                i.setAdapter(adapter);
+                                                i.setPosition(new LatLng(Double.parseDouble(item.getLatitude())+0.0008, Double.parseDouble(item.getLongitude())));
+                                                //투명도 조정
+                                                i .setAlpha(0.9f);
+                                                i.open(NaverMap);
+                                                flag=1;
+                                                Log.d(TAG, ""+"flag=0");
+                                            }
                                             return false;
+
                                         }
                                     });
+
                                     nonSmokingCircle.add(circle);
                                 }
                                 Log.d(TAG, "success");
@@ -149,12 +165,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         });
-
-
-
-
-
-
 
         btn_smoke.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,25 +204,52 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         });
+
         btn_cloud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG,"GET");
                 Call<List<mannerAreaItem>> getCall = mMyAPI3.get_posts();
                 getCall.enqueue(new Callback<List<mannerAreaItem>>() {
                     @Override
                     public void onResponse(Call<List<mannerAreaItem>> call, Response<List<mannerAreaItem>> response) {
                         if( response.isSuccessful()){
-                            /*List<mannerAreaItem> mList = response.body();
+                            List<mannerAreaItem> mList = response.body();
                             for( mannerAreaItem item : mList){
+                                String[] strAry=item.getGeom().split(" ");
+                                strAry[1] = strAry[1].replace("((","");
+                                strAry[strAry.length-1] = strAry[strAry.length-1].replace("))","");
+                                PolygonOverlay polygon = new PolygonOverlay();
+                                List<LatLng> coords = new ArrayList<>();
+                                for(int i=1;i<strAry.length-1;i++){
+                                    if(i%2==0){
+                                        strAry[i] = strAry[i].replace(",","");
+                                    }
+                                }
+                                for(int i=1;i<strAry.length-1;i+=2){
+                                    strAry[i+1]=strAry[i+1].replace(")","");
+                                    strAry[i+1]=strAry[i+1].replace("(","");
+                                    strAry[i]=strAry[i].replace(")","");
+                                    strAry[i]=strAry[i].replace("(","");
+                                    Double lat=Double.parseDouble(strAry[i+1]);
+                                    Double longitude=Double.parseDouble(strAry[i]);
+                                    try{
+                                        coords.add(new LatLng(lat,longitude));
+                                    }catch (Exception e){
+                                        Log.d(TAG, "manner strict 오류!!!!!");
+                                    }
+                                }
 
-                            }*/
-                            Log.d(TAG,"mannerArea : success");
+                                Log.d(TAG, " " + coords.size());
+                                polygon.setCoords(coords);
+                                polygon.setColor(Color.argb(0.5f,0.0f,0.5f,0.9f));
+                                mannerArea.add(polygon);
+                                Log.d(TAG, "manner strict!");
+                                polygon.setMap(NaverMap);
+                            }
                         }else {
                             Log.d(TAG,"Status Code : " + response.code());
                         }
                     }
-
                     @Override
                     public void onFailure(Call<List<mannerAreaItem>> call, Throwable t) {
                         Log.d(TAG,"Fail msg : " + t.getMessage());
@@ -223,18 +260,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void initMyAPI(String baseUrl){
-
-        Log.d(TAG,"initMyAPI : " + baseUrl);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
         mMyAPI = retrofit.create(MyApi.class);
-
     }
     private void initMyAPI_smoking(String baseUrl){
-        Log.d(TAG,"initMyAPI_smoking : " + baseUrl);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -242,23 +274,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMyAPI2 = retrofit.create(MyApi_smoking.class);
     }
     private void initMyAPI_mannerArea(String baseUrl){
-        Log.d(TAG,"initMyAPI_smoking : " + baseUrl);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         mMyAPI3 = retrofit.create(MyApi_mannerArea.class);
     }
-
-
     public void naverMapBasicSettings() {
         mapView.getMapAsync(this);
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,  @NonNull int[] grantResults) {
-
         if (locationSource.onRequestPermissionsResult(
                 requestCode, permissions, grantResults)) {
             if (!locationSource.isActivated()) { // 권한 거부됨

@@ -20,7 +20,7 @@ public interface MyApi_mannerArea {
     @DELETE("/posts/{pk}/")
     Call<mannerAreaItem> delete_posts(@Path("pk") int pk);
 
-    @GET("/")    //매너구역 주소 나오면 넣기
+    @GET("/manner/")    //매너구역 주소 나오면 넣기
     Call<List<mannerAreaItem>> get_posts();
 
     @GET("/{pk}/")

@@ -29,6 +29,7 @@ import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.Overlay;
 import com.naver.maps.map.overlay.OverlayImage;
+import com.naver.maps.map.overlay.PolygonOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 
 import java.sql.Array;
@@ -71,6 +72,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public List<nonSmoke> nonSmokeAreas = new ArrayList<>();
     public List<smoke> smokeAreas = new ArrayList<>();
 
+    public List<PolygonOverlay> cloud = new ArrayList<>();
+
+
     //public List<InfoWindow> nonSmokeAreaInfos = new ArrayList<>();
 
 
@@ -92,6 +96,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         initMyAPI(BASE_URL);
         initMyAPI_smoking(BASE_URL);
         initMyAPI_mannerArea(BASE_URL);
+
+
+
+
 
         btn_non_smoke.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -118,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                             ViewGroup rootView = (ViewGroup)findViewById(R.id.map_view);
                                             System.out.println("name :"+item.getName());
 
-                                            pointAdapter adapter = new pointAdapter(MainActivity.this, rootView,item.getName(),item.getAddress_doromyung(),item.getFine());
+                                            pointAdapter adapter = new pointAdapter(MainActivity.this, rootView,item.getName(),item.getAddress_doromyung(),"벌금 "+item.getFine(),item.getImage());
 
                                             InfoWindow i = new InfoWindow();
                                             i.setAdapter(adapter);
@@ -129,7 +137,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                             //투명도 조정
                                             i .setAlpha(0.9f);
                                             //인포창 표시
-                                            i.open(NaverMap);
+                                          //  i.open(NaverMap);
+                                            i.setMap(NaverMap);
+                                            i.setOnClickListener(new Overlay.OnClickListener() {
+                                                @Override
+                                                public boolean onClick(@NonNull Overlay overlay) {
+                                                    i.setMap(null);
+                                                    return false;
+                                                }
+                                            });
+                                            /*
+                                            NaverMap.setOnMapClickListener((coord, point) -> {
+                                                i.close();
+                                                Log.d(TAG, ""+"맵 누르기");
+                                            });
+
+                                             */
+
                                             return false;
                                         }
                                     });
@@ -178,7 +202,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     circle.setRadius(Double.parseDouble(item.getRadius()));
                                     circle.setColor(Color.argb(0.3f,0.0f,1.0f,0.0f));
                                     circle.setMap(NaverMap);
+                                    circle.setOnClickListener(new Overlay.OnClickListener() {
+                                        @Override
+                                        public boolean onClick(@NonNull Overlay overlay) {
+                                            ViewGroup rootView = (ViewGroup)findViewById(R.id.map_view);
+                                            System.out.println("name :"+item.getName());
+
+                                            pointAdapter adapter = new pointAdapter(MainActivity.this, rootView,item.getName(),item.getAddress_doromyung(),"법정지정흡연구역",item.getImage());
+
+                                            InfoWindow i = new InfoWindow();
+                                            i.setAdapter(adapter);
+
+                                            i.setPosition(new LatLng(Double.parseDouble(item.getLatitude()),Double.parseDouble(item.getLongitude())));
+                                            // TextView location = findViewById(R.id.window_location);
+                                            //location.setText("어린이대공원");
+                                            //투명도 조정
+                                            i .setAlpha(0.9f);
+                                            //인포창 표시
+                                            i.setMap(NaverMap);
+                                            i.setOnClickListener(new Overlay.OnClickListener() {
+                                                @Override
+                                                public boolean onClick(@NonNull Overlay overlay) {
+                                                    i.setMap(null);
+                                                    return false;
+                                                }
+                                            });
+                                            return false;
+                                        }
+                                    });
                                     smokingCircle.add(circle);
+
                                 }
                                 Log.d(TAG, "success");
                             } else {
@@ -208,10 +261,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onResponse(Call<List<mannerAreaItem>> call, Response<List<mannerAreaItem>> response) {
                         if( response.isSuccessful()){
-                            /*List<mannerAreaItem> mList = response.body();
+                            List<mannerAreaItem> mList = response.body();
                             for( mannerAreaItem item : mList){
 
-                            }*/
+                            }
                             Log.d(TAG,"mannerArea : success");
                         }else {
                             Log.d(TAG,"Status Code : " + response.code());
@@ -296,3 +349,4 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         naverMap.moveCamera(cameraUpdate);
     }
 }
+

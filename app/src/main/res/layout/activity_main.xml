@@ -24,21 +24,18 @@
         <LinearLayout
             android:id="@+id/btm_layout"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:foregroundGravity="bottom"
-            android:gravity="bottom"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:translationY="550dp">
+            android:layout_gravity="bottom"
+            >
 
 
             <ToggleButton
                 android:id="@+id/btn_smoke"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:background="#00ff0000"
-
                 android:drawableLeft="@drawable/img_smoke"
                 android:textOff="흡연구역"
                 android:textOn="흡연구역"

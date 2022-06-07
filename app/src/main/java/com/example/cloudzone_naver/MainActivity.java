@@ -109,11 +109,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         initMyAPI_mannerArea_point(BASE_URL);
 
 
-
-
-
-
-
         btn_non_smoke.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -306,9 +301,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 }
                 else{
-                    /*for(PolygonOverlay c : mannerArea){
-                        c.setMap(null);
-                    }*/
+
                     for(Marker m : mannerAreaPoint){
                         m.setMap(null);
                     }
@@ -319,73 +312,63 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         btn_plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
-/*
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable(){
-                    @Override
-                    public void run() {
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(intent); //인트로 실행 후 바로 MainActivity로 넘어감.
-                        finish();
-                    }
-                },2000); //1초 후 인트로 실행
-
-
- */
-
-
-
-                Log.d(TAG,"GET");
-                Call<List<mannerAreaItem>> getCall = mMyAPI3.get_posts();
-                getCall.enqueue(new Callback<List<mannerAreaItem>>() {
-                    @Override
-                    public void onResponse(Call<List<mannerAreaItem>> call, Response<List<mannerAreaItem>> response) {
-                        if( response.isSuccessful()){
-                            List<mannerAreaItem> mList = response.body();
-                            for( mannerAreaItem item : mList){
-                                String[] strAry=item.getGeom().split(" ");
-                                strAry[1] = strAry[1].replace("((","");
-                                strAry[strAry.length-1] = strAry[strAry.length-1].replace("))","");
-                                PolygonOverlay polygon = new PolygonOverlay();
-                                List<LatLng> coords = new ArrayList<>();
-                                for(int i=1;i<strAry.length-1;i++){
-                                    if(i%2==0){
-                                        strAry[i] = strAry[i].replace(",","");
+                if(btn_plus.isChecked()){
+                    Log.d(TAG,"GET");
+                    Call<List<mannerAreaItem>> getCall = mMyAPI3.get_posts();
+                    getCall.enqueue(new Callback<List<mannerAreaItem>>() {
+                        @Override
+                        public void onResponse(Call<List<mannerAreaItem>> call, Response<List<mannerAreaItem>> response) {
+                            if( response.isSuccessful()){
+                                List<mannerAreaItem> mList = response.body();
+                                for( mannerAreaItem item : mList){
+                                    String[] strAry=item.getGeom().split(" ");
+                                    strAry[1] = strAry[1].replace("((","");
+                                    strAry[strAry.length-1] = strAry[strAry.length-1].replace("))","");
+                                    PolygonOverlay polygon = new PolygonOverlay();
+                                    List<LatLng> coords = new ArrayList<>();
+                                    for(int i=1;i<strAry.length-1;i++){
+                                        if(i%2==0){
+                                            strAry[i] = strAry[i].replace(",","");
+                                        }
                                     }
-                                }
-                                for(int i=1;i<strAry.length-1;i+=2){
-                                    strAry[i+1]=strAry[i+1].replace(")","");
-                                    strAry[i+1]=strAry[i+1].replace("(","");
-                                    strAry[i]=strAry[i].replace(")","");
-                                    strAry[i]=strAry[i].replace("(","");
-                                    Double lat=Double.parseDouble(strAry[i+1]);
-                                    Double longitude=Double.parseDouble(strAry[i]);
-                                    try{
-                                        coords.add(new LatLng(lat,longitude));
-                                    }catch (Exception e){
-                                        Log.d(TAG, "manner strict 오류!!!!!");
+                                    for(int i=1;i<strAry.length-1;i+=2){
+                                        strAry[i+1]=strAry[i+1].replace(")","");
+                                        strAry[i+1]=strAry[i+1].replace("(","");
+                                        strAry[i]=strAry[i].replace(")","");
+                                        strAry[i]=strAry[i].replace("(","");
+                                        Double lat=Double.parseDouble(strAry[i+1]);
+                                        Double longitude=Double.parseDouble(strAry[i]);
+                                        try{
+                                            coords.add(new LatLng(lat,longitude));
+                                        }catch (Exception e){
+                                            Log.d(TAG, "manner strict 오류!!!!!");
+                                        }
                                     }
-                                }
 
-                                Log.d(TAG, " " + coords.size());
-                                polygon.setCoords(coords);
-                                polygon.setColor(Color.argb(0.8f,0.0f,0.5f,0.9f));
-                                mannerArea.add(polygon);
-                                Log.d(TAG, "manner strict!");
-                                polygon.setMap(NaverMap);
+                                    Log.d(TAG, " " + coords.size());
+                                    polygon.setCoords(coords);
+                                    polygon.setColor(Color.argb(0.8f,0.0f,0.5f,0.9f));
+                                    mannerArea.add(polygon);
+                                    Log.d(TAG, "manner strict!");
+                                    polygon.setMap(NaverMap);
+                                }
                             }
-                        }else {
-                            Log.d(TAG,"Status Code : " + response.code());
+                            else {
+                                Log.d(TAG,"Status Code : " + response.code());
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<List<mannerAreaItem>> call, Throwable t) {
-                        Log.d(TAG,"Fail msg : " + t.getMessage());
+                        @Override
+                        public void onFailure(Call<List<mannerAreaItem>> call, Throwable t) {
+                            Log.d(TAG,"Fail msg : " + t.getMessage());
+                        }
+                    });
+                }
+                else{
+                    for(PolygonOverlay c : mannerArea){
+                        c.setMap(null);
                     }
-                });
+                }
             }
         });
 
@@ -394,17 +377,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View v) {
                 int nowValue = bar.getProgress();
                 int maxValue = bar.getMax();
-
                 if(maxValue == nowValue) {
                     nowValue = 0;
                 } else {
+                    nowValue+=10;
                     bar.setVisibility(View.VISIBLE);
-                    nowValue += 20;
 
                 }
-
                 bar.setProgress(nowValue);
-
             }
         });
 

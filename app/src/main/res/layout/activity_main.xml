@@ -76,7 +76,6 @@
                 android:textColor="@color/black"
                 android:textOff="구름존"
                 android:textOn="구름존"
-
                 />
 
             <ToggleButton

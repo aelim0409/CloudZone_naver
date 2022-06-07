@@ -14,13 +14,16 @@
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
-            android:layout_height="100dp"/>
+            android:layout_height="100dp" />
+
         <LinearLayout
             android:id="@+id/btm_layout"
             android:layout_width="match_parent"
@@ -28,47 +31,55 @@
             android:foregroundGravity="bottom"
             android:gravity="bottom"
             android:orientation="horizontal"
-            android:translationY="550dp">
+            android:translationY="600dp">
 
 
             <ToggleButton
                 android:id="@+id/btn_smoke"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:background="#00ff0000"
-
+                android:paddingHorizontal="10dp"
+                android:background="@drawable/button_background"
                 android:drawableLeft="@drawable/img_smoke"
-                android:textOff="흡연구역"
-                android:textOn="흡연구역"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:textColor="@color/black"
-               />
+                android:textOff="흡연구역"
+                android:textOn="흡연구역" />
 
             <ToggleButton
                 android:id="@+id/btn_cloud"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:background="#00ff0000"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:paddingHorizontal="10dp"
+                android:background="@drawable/button_background"
                 android:drawableLeft="@drawable/img_cloud"
+                android:textColor="@color/black"
                 android:textOff="구름존"
                 android:textOn="구름존"
-                android:textColor="@color/black"
 
-            />
+                />
 
             <ToggleButton
                 android:id="@+id/btn_non_smoke"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:layout_weight="1"
-                android:background="#00ff0000"
+                android:background="@drawable/button_background"
                 android:drawableLeft="@drawable/img_nonsmoke"
-                android:textOff="금연구역"
-                android:textOn="금연구역"
+                android:paddingHorizontal="10dp"
                 android:textColor="@color/black"
-                />
+                android:textOff="금연구역"
+                android:textOn="금연구역" />
         </LinearLayout>
 
 

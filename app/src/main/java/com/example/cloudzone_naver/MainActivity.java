@@ -141,14 +141,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                                     return false;
                                                 }
                                             });
-                                            /*
-                                            NaverMap.setOnMapClickListener((coord, point) -> {
-                                                i.close();
-                                                Log.d(TAG, ""+"맵 누르기");
-                                            });
-
-                                             */
-
                                             return false;
                                         }
                                     });
@@ -159,7 +151,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 Log.d(TAG, "Status Code : " + response.code());
                             }
                         }
-
                         @Override
                         public void onFailure(Call<List<PostItem>> call, Throwable t) {
                             Log.d(TAG, "Fail msg : " + t.getMessage());

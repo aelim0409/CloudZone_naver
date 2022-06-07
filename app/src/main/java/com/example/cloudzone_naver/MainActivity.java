@@ -4,13 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -89,6 +92,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ToggleButton btn_non_smoke = (ToggleButton)findViewById(R.id.btn_non_smoke);
         ToggleButton btn_smoke = (ToggleButton)findViewById(R.id.btn_smoke);
         ToggleButton btn_cloud = (ToggleButton) findViewById(R.id.btn_cloud);
+        ToggleButton btn_plus = (ToggleButton) findViewById(R.id.btn_plus);
+        ProgressBar bar = findViewById(R.id.progressBar);
+
+
+
         mapView = findViewById(R.id.map_view);
         mapView.onCreate(savedInstanceState);
         naverMapBasicSettings();
@@ -178,10 +186,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
-
-
-
-
         btn_smoke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -253,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 //m.setPosition(new LatLng(127.10530723769554, 37.544845489786375));
                 if(btn_cloud.isChecked()==true){
                     Log.d(TAG,"GET");
-                    //Call<List<mannerAreaItem>> getCall = mMyAPI3.get_posts();
+                    Call<List<mannerAreaItem>> getCall = mMyAPI3.get_posts();
 
                     Call<List<mannerAreaPointItem>> getCall2 = mMyAPI4.get_posts();
                     getCall2.enqueue(new Callback<List<mannerAreaPointItem>>() {
@@ -265,20 +269,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     String[] strAry=item.getGeom().split(" ");
                                     strAry[1] = strAry[1].replace("(","");
                                     strAry[strAry.length-1] = strAry[strAry.length-1].replace(")","");
-                                    Log.d(TAG,""+strAry[1]+" "+strAry[2]);
+                                    Log.d(TAG,"fffff"+strAry[1]+" "+strAry[2]);
 
                                     Marker m = new Marker();
                                     m.setPosition(new LatLng(Double.parseDouble(strAry[2]),Double.parseDouble(strAry[1])));
-                                    m.setWidth(30);
-                                    m.setHeight(50);
+                                    m.setWidth(60);
+                                    m.setHeight(60);
                                     m.setMap(NaverMap);
+
+                                    m.setIcon(OverlayImage.fromResource(R.drawable.cloud2));
+
+
+
                                     mannerAreaPoint.add(m);
                                 }
+
                             }else {
                                 Log.d(TAG,"Status Code : " + response.code());
                             }
 
                         }
+
 
                         @Override
                         public void onFailure(Call<List<mannerAreaPointItem>> call, Throwable t) {
@@ -297,6 +308,89 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         });
+
+        btn_plus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int nowValue = bar.getProgress();
+                int maxValue = bar.getMax();
+
+                if(maxValue == nowValue) {
+                    nowValue = 0;
+                } else {
+                    bar.setVisibility(View.VISIBLE);
+                    nowValue += 20;
+                }
+/*
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable(){
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent); //인트로 실행 후 바로 MainActivity로 넘어감.
+                        finish();
+                    }
+                },2000); //1초 후 인트로 실행
+
+
+ */
+
+                bar.setProgress(nowValue);
+
+                Log.d(TAG,"GET");
+                Call<List<mannerAreaItem>> getCall = mMyAPI3.get_posts();
+                getCall.enqueue(new Callback<List<mannerAreaItem>>() {
+                    @Override
+                    public void onResponse(Call<List<mannerAreaItem>> call, Response<List<mannerAreaItem>> response) {
+                        if( response.isSuccessful()){
+                            List<mannerAreaItem> mList = response.body();
+                            for( mannerAreaItem item : mList){
+                                String[] strAry=item.getGeom().split(" ");
+                                strAry[1] = strAry[1].replace("((","");
+                                strAry[strAry.length-1] = strAry[strAry.length-1].replace("))","");
+                                PolygonOverlay polygon = new PolygonOverlay();
+                                List<LatLng> coords = new ArrayList<>();
+                                for(int i=1;i<strAry.length-1;i++){
+                                    if(i%2==0){
+                                        strAry[i] = strAry[i].replace(",","");
+                                    }
+                                }
+                                for(int i=1;i<strAry.length-1;i+=2){
+                                    strAry[i+1]=strAry[i+1].replace(")","");
+                                    strAry[i+1]=strAry[i+1].replace("(","");
+                                    strAry[i]=strAry[i].replace(")","");
+                                    strAry[i]=strAry[i].replace("(","");
+                                    Double lat=Double.parseDouble(strAry[i+1]);
+                                    Double longitude=Double.parseDouble(strAry[i]);
+                                    try{
+                                        coords.add(new LatLng(lat,longitude));
+                                    }catch (Exception e){
+                                        Log.d(TAG, "manner strict 오류!!!!!");
+                                    }
+                                }
+
+                                Log.d(TAG, " " + coords.size());
+                                polygon.setCoords(coords);
+                                polygon.setColor(Color.argb(0.8f,0.0f,0.5f,0.9f));
+                                mannerArea.add(polygon);
+                                Log.d(TAG, "manner strict!");
+                                polygon.setMap(NaverMap);
+                            }
+                        }else {
+                            Log.d(TAG,"Status Code : " + response.code());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<mannerAreaItem>> call, Throwable t) {
+                        Log.d(TAG,"Fail msg : " + t.getMessage());
+                    }
+                });
+            }
+        });
+
+
     }
 
     private void initMyAPI(String baseUrl){
@@ -366,9 +460,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // 지도 유형 위성사진으로 설정 ->
         //  naverMap.setMapType(NaverMap.MapType.Satellite);
         // 위치 setlocation
-        // naverMap.setLocationSource(locationSource);
+         //naverMap.setLocationSource(locationSource);
         //트래킹 모두 카메라가 따라감
-        // naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
+         //naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
 
         CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(37.542153, 127.082076));
         naverMap.moveCamera(cameraUpdate);

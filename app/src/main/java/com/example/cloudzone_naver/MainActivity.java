@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ToggleButton btn_smoke = (ToggleButton)findViewById(R.id.btn_smoke);
         ToggleButton btn_cloud = (ToggleButton) findViewById(R.id.btn_cloud);
         ToggleButton btn_plus = (ToggleButton) findViewById(R.id.btn_plus);
+        ToggleButton btn_progress = (ToggleButton) findViewById(R.id.progress);
         ProgressBar bar = findViewById(R.id.progressBar);
 
 
@@ -106,6 +107,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         initMyAPI_smoking(BASE_URL);
         initMyAPI_mannerArea(BASE_URL);
         initMyAPI_mannerArea_point(BASE_URL);
+
+
+
+
+
+
 
         btn_non_smoke.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -313,15 +320,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
 
-                int nowValue = bar.getProgress();
-                int maxValue = bar.getMax();
 
-                if(maxValue == nowValue) {
-                    nowValue = 0;
-                } else {
-                    bar.setVisibility(View.VISIBLE);
-                    nowValue += 20;
-                }
 /*
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable(){
@@ -336,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
  */
 
-                bar.setProgress(nowValue);
+
 
                 Log.d(TAG,"GET");
                 Call<List<mannerAreaItem>> getCall = mMyAPI3.get_posts();
@@ -390,6 +389,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        btn_progress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int nowValue = bar.getProgress();
+                int maxValue = bar.getMax();
+
+                if(maxValue == nowValue) {
+                    nowValue = 0;
+                } else {
+                    bar.setVisibility(View.VISIBLE);
+                    nowValue += 20;
+
+                }
+
+                bar.setProgress(nowValue);
+
+            }
+        });
 
     }
 
@@ -455,16 +472,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 // 현재 위치 NaverMap 안보이게 설정
         UiSettings uiSettings = NaverMap.getUiSettings();
 
-        uiSettings.setLocationButtonEnabled(true);
+        uiSettings.setLocationButtonEnabled(false);
 
         // 지도 유형 위성사진으로 설정 ->
         //  naverMap.setMapType(NaverMap.MapType.Satellite);
         // 위치 setlocation
-         //naverMap.setLocationSource(locationSource);
+         naverMap.setLocationSource(locationSource);
         //트래킹 모두 카메라가 따라감
-         //naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
+         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
 
-        CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(37.542153, 127.082076));
-        naverMap.moveCamera(cameraUpdate);
+       // CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(37.542153, 127.082076));
+        //naverMap.moveCamera(cameraUpdate);
     }
+
+
 }
